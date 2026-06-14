@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
+#include <math.h>
 
 void make_box(){
     for (int i = 0; i < 4; i++){
@@ -28,10 +29,14 @@ double get_best(){
     double best;
     FILE *ptr = fopen("best.bin", "rb");
 
+    if (ptr == NULL){
+        return INFINITY; // no best 
+    }
+
     if (fread(&best, sizeof(best), 1, ptr) != 1){
         printf("Best value could not be read.\n");
         fclose(ptr);
-        return -1.0; //error
+        return INFINITY; // no best
     };
 
     fclose(ptr); // close pointer
@@ -53,7 +58,7 @@ int write_best(double x) {
 }
 
 int main(){
-    printf("Press `Enter` once the box appears.\n");
+    printf("Press 'Enter' once the box appears.\n");
     fflush(stdout);
 
     sleep(1);
@@ -62,16 +67,15 @@ int main(){
 
     double time = measure_reaction();
 
-    printf("Reaction time: %lf seconds\n", time);
+    printf("Reaction time: %lf seconds.\n", time);
 
     double best = get_best(); // get best time
-    printf("Your best time is: %lf\n", best);
 
     // check if time is better than best
     if (time < best) { // record new best
         write_best(time);
     } else { // print the current best
-        printf("Your best time is: %lf\n", best);
+        printf("Your best reaction time is: %lf seconds.\n", best);
     }
     
     return 0;
